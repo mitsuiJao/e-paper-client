@@ -55,11 +55,7 @@ class drawString():
             offset_px = offset_char * 8 * self.size
             return offset_px, self.y
         
-    def jadraw(self):
-        bm = wlan.request_API(self.string)
-        
-    
-    def _jpblackchar(epd, fd, x, y, scale):
+    def _jpchar(self, epd, fd, x, y, scale):
         for row in range(0, 7):
             for col in range(0, 7):
                 if (0x80 >> col) & fd[row]:
@@ -72,3 +68,25 @@ class drawString():
                             else:
                                 epd.imageblack.pixel(col * scale + x + dx, row * scale + y + dy, 0xff)
                                 epd.imagered.pixel(col * scale + x + dx, row * scale + y + dy, 0x00)
+                            
+    def _char(self, epd, c, x, y, scale):
+        if self.is_red:
+            self.epd.imagered.large_text(c, x, y, self.size, 0xff)
+        elif not self.is_filled:
+            self.epd.imageblack.large_text(c, x, y, self.size, 0x00)
+        else:
+            self.epd.imageblack.large_text(c, x, y, self.size, 0xff)
+            self.epd.imagered.large_text(c, x, y, self.size, 0x00)
+
+              
+    def jadraw(self):
+        x = self.x
+        for c in self.string:
+            if len(c) == len(c.encode("utf-8")):
+                self._char(self.epd, c, x, self.y, self.size)
+                
+            else:
+                bm = wlan.request_API("https://192.168.0.102/api/font", q=c)
+                self._jpchar(self.epd, bm["bitmap"], x, self.y, self.size)
+            
+            x += 8*self.size

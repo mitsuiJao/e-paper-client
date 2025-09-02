@@ -6,7 +6,7 @@ import requests
 epd = epd7in5b_V2.EPD()
 try:
     size = 480*800 // 8 
-    url = "https://mitsuijao.fun/api/calendar"
+    url = "https://mitsuijao.fun/api/weather"
     payload = {}
     headers = {}
 
